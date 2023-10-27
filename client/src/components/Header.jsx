@@ -1,10 +1,12 @@
 import { Navbar,Nav, Container, NavbarBrand, NavDropdown, Badge } from "react-bootstrap";
-import {FaSignInAlt, FaSignOutAlt} from 'react-icons/fa';
+// import {FaSignInAlt, FaSignOutAlt} from 'react-icons/fa';
 import {useSelector, useDispatch} from 'react-redux';
 import { LinkContainer } from "react-router-bootstrap";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import {logout} from '../slices/authSlice.js'
 import {useNavigate} from 'react-router-dom'
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Header = () => {
     const {userInfo} = useSelector((state)=>state.auth);
@@ -47,12 +49,12 @@ const Header = () => {
                                 <>
                                 <LinkContainer to='/login'>
                             <Nav.Link>
-                                <FaSignInAlt/>Sign in 
+                                <LoginIcon/>Login 
                             </Nav.Link>
                             </LinkContainer>
                             <LinkContainer to='/register'>
                             <Nav.Link>
-                                <FaSignOutAlt/> Sign up
+                                <LogoutIcon/> Sign up
                             </Nav.Link>
                             </LinkContainer>
                                 </>
