@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import ProjectNFT from './abi.json'; // Replace with the correct path
+import ProjectNFT from '../abi.json'; // Replace with the correct path
 
 const Mint = () => {
   const [contract, setContract] = useState(null);
