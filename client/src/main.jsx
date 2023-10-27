@@ -13,6 +13,7 @@ import store from './store.js'
 import { Provider } from 'react-redux'
 import Items from './screens/Items.jsx'
 import AddItem from './screens/AddItem.jsx'
+import Mint from './screens/Mint.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
         <Route path='' element={<PrivateRoute/>}>
         <Route path='/profile' element={<ProfileScreen/>}/>
         <Route path='/add' element={<AddItem/>}/>
+        <Route path='/mint' element={<Mint/>}/>
         </Route>
     </Route>
   )
