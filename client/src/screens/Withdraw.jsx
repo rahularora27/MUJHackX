@@ -1,19 +1,43 @@
-import { Container, Card, Button } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { useEffect } from "react";
-import { ethers } from "ethers";
-import { contractAddress } from './constants'
-import { abi } from './constants';
-import { useState } from "react";
+import React from 'react'
+import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import FormContainer from './FormContainer';
+import { ethers } from "ethers";
+import { contractAddress } from '../components/constants';
+import { abi } from '../components/constants';
+import FormContainer from '../components/FormContainer';
 
 
 
-const Hero = () => {
+const Withdraw = () => {
+  const [balanceState, setBalance] = useState("0.0");
   const [isConnected, toggleConnect] = useState(false);
-  const [fundAmount, setFundAmount] = useState("");
+
+
+  async function getBalance() {
+    if (typeof window.ethereum != "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const balance = await provider.getBalance(contractAddress);
+      toast("The balance is " + ethers.utils.formatEther(balance));
+      setBalance(balance.toString()/1000000000000000000); // Convert BigNumber to string before setting it in the state
+    } else {
+      toast.error("Connect to MetaMask");
+    }
+  }
+
+
+  async function withdraw() {
+    console.log("Withdrawing....");
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+    try {
+      const transactionResponse = await contract.withdraw();
+      await listenForTransactionMine(transactionResponse, provider);
+    } catch (error) {
+      toast.error(erorr);
+    }
+  }
 
   async function connect() {
     console.log("we have run connect func");
@@ -40,42 +64,11 @@ const Hero = () => {
 
   useEffect(() => {
     connect();
+    getBalance();
+
   }, []);
 
   
-
-  async function fund() {
-    if (!isConnected) {
-      toast.error("Connect to MetaMask first");
-      return;
-    }
-    const ethAmount = fundAmount;
-    console.log("Eth amount is" + ethAmount);
-    toast(`Funding with ${ethAmount}`);
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log("provider is this " + provider);
-    const signer = provider.getSigner();
-    console.log("signer is this " + signer);
-    console.log("abi is this " + abi);
-    const contract = new ethers.Contract(contractAddress, abi, signer);
-    console.log("contract is this " + contract);
-    try {
-      const transactionResponse = await contract.fund({
-        value: ethers.utils.parseEther(ethAmount),
-      });
-      console.log(
-        "fund happened and transacrion response is this " + transactionResponse
-      );
-      // listen for the tx to be mined
-      await listenForTransactionMine(transactionResponse, provider);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  function handleFundAmountChange(event) {
-    setFundAmount(event.target.value);
-  }
-
   function listenForTransactionMine(transactionResponse, provider) {
     toast(`Mining ${transactionResponse.hash}...`);
     // return new Promise()
@@ -90,11 +83,13 @@ const Hero = () => {
     });
   }
 
-  
-
   return (
     <FormContainer>
-      <h1>Fund the Contract</h1>
+        <h1>Withdraw</h1>
+        <div>
+        
+        <h3>Balance of the contract is {balanceState}</h3>
+      </div>
       <div className="isConnected">
         You are currently {isConnected ? "connected" : "not connected"} to
         MetaMask
@@ -105,13 +100,13 @@ const Hero = () => {
         )}
         
       </div>
-      <div>
-        <input onChange={handleFundAmountChange} placeholder="ETH Amount" />
-        <button className='button' onClick={fund}>Fund!</button>
-      </div>
-      <ToastContainer />
-    </FormContainer>
-  );
-};
 
-export default Hero;
+        <div>
+        <button className='button' onClick={withdraw}>Withdraw</button>
+      </div>
+        <ToastContainer />
+    </FormContainer>
+  )
+}
+
+export default Withdraw;
